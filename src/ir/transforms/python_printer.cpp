@@ -34,6 +34,7 @@
 #include "pypto/ir/expr.h"
 #include "pypto/ir/function.h"
 #include "pypto/ir/kind_traits.h"
+#include "pypto/ir/memory_space.h"
 #include "pypto/ir/memref.h"
 #include "pypto/ir/pipe.h"
 #include "pypto/ir/program.h"
@@ -344,6 +345,17 @@ std::string IRPythonPrinter::Print(const TypePtr& type) {
     PrintShapeDims(oss, tile_type->shape_);
     oss << "], " << prefix_ << "." << DataTypeToString(tile_type->dtype_);
 
+    // Add optional memref as positional arg
+    if (tile_type->memref_.has_value()) {
+      oss << ", " << PrintMemRef(*tile_type->memref_.value());
+    }
+
+    // Add optional memory_space as positional arg
+    if (tile_type->memory_space_.has_value()) {
+      auto mem_str = MemorySpaceToString(tile_type->memory_space_.value());
+      oss << ", " << prefix_ << ".MemorySpace." << mem_str;
+    }
+
     // Add optional tile_view parameter if present and has non-default fields
     if (tile_type->tile_view_.has_value()) {
       auto tv_str = PrintTileView(tile_type->tile_view_.value(), tile_type->shape_);
@@ -352,10 +364,6 @@ std::string IRPythonPrinter::Print(const TypePtr& type) {
       }
     }
 
-    // Add optional memref as positional arg
-    if (tile_type->memref_.has_value()) {
-      oss << ", " << PrintMemRef(*tile_type->memref_.value());
-    }
     oss << "]";
     return oss.str();
   }

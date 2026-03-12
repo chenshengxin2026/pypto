@@ -30,6 +30,7 @@
 #include "pypto/ir/expr.h"
 #include "pypto/ir/function.h"
 #include "pypto/ir/kind_traits.h"
+#include "pypto/ir/memory_space.h"
 #include "pypto/ir/memref.h"
 #include "pypto/ir/program.h"
 #include "pypto/ir/reflection/field_visitor.h"
@@ -430,6 +431,9 @@ class StructuralEqualImpl {
       } else if (lhs_val.type() == typeid(DataType)) {
         values_equal = (AnyCast<DataType>(lhs_val, "comparing kwarg: " + lhs[i].first) ==
                         AnyCast<DataType>(rhs_val, "comparing kwarg: " + lhs[i].first));
+      } else if (lhs_val.type() == typeid(MemorySpace)) {
+        values_equal = (AnyCast<MemorySpace>(lhs_val, "comparing kwarg: " + lhs[i].first) ==
+                        AnyCast<MemorySpace>(rhs_val, "comparing kwarg: " + lhs[i].first));
       }
       if (!values_equal) {
         if constexpr (AssertMode) {
@@ -916,6 +920,20 @@ bool StructuralEqualImpl<AssertMode>::EqualType(const TypePtr& lhs, const TypePt
         }
         return false;
       }
+    }
+    // Compare memory_space
+    if (lhs_tile->memory_space_.has_value() != rhs_tile->memory_space_.has_value()) {
+      if constexpr (AssertMode) {
+        ThrowMismatch("TileType memory_space presence mismatch", IRNodePtr(), IRNodePtr(), "", "");
+      }
+      return false;
+    }
+    if (lhs_tile->memory_space_.has_value() &&
+        lhs_tile->memory_space_.value() != rhs_tile->memory_space_.value()) {
+      if constexpr (AssertMode) {
+        ThrowMismatch("TileType memory_space mismatch", IRNodePtr(), IRNodePtr(), "", "");
+      }
+      return false;
     }
     return true;
   } else if (auto lhs_tuple = As<TupleType>(lhs)) {

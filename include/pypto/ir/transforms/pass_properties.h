@@ -89,6 +89,12 @@ inline const PassProperties kFlattenTileNdTo2DProperties{
     .required = {IRProperty::SSAForm, IRProperty::IncoreTileOps},
     .produced = {IRProperty::SSAForm, IRProperty::TileOps2D}};
 
+// -- Tile memory space inference pass -----------------------------------------
+
+inline const PassProperties kInferTileMemorySpaceProperties{
+    .required = {IRProperty::SSAForm, IRProperty::IncoreTileOps, IRProperty::SplitIncoreOrch},
+    .produced = {IRProperty::SSAForm, IRProperty::TileMemoryInferred}};
+
 // -- Mixed kernel expansion pass ----------------------------------------------
 
 inline const PassProperties kExpandMixedKernelProperties{
