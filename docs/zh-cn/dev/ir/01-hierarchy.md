@@ -220,11 +220,14 @@ for_stmt = ir.ForStmt(i, start, stop, step, [], body, [], span, ir.ForKind.Paral
 
 ```python
 memref = ir.MemRef(
-    ir.MemorySpace.DDR,
+    ir.Mem.DDR,  # ir.Mem is a short alias for ir.MemorySpace
     ir.ConstInt(0x1000, DataType.INT64, span),
-    1024  # bytes
+    1024,  # bytes
+    0     # id
 )
 ```
+
+> **注意：** `ir.Mem` 是 `ir.MemorySpace` 的简写别名。
 
 ### TileView - Tile 布局
 

@@ -485,8 +485,8 @@ class KernelGenerator:
             indent_level: Indentation nesting level (default 2 = 8 spaces).
         """
         ind = _INDENT * indent_level
-        # Map integer target_memory to MemorySpace enum names
-        memory_enum_map = {3: "pl.MemorySpace.Left", 4: "pl.MemorySpace.Right"}
+        # Map integer target_memory to Mem enum names (pl.Mem is short for pl.MemorySpace)
+        memory_enum_map = {3: "pl.Mem.Left", 4: "pl.Mem.Right"}
         code_lines = []
         memory_suffix = "l0a" if target_memory == 3 else "l0b"
         memory_enum = memory_enum_map.get(target_memory, str(target_memory))
