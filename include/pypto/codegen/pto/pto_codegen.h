@@ -192,6 +192,7 @@ class PTOCodegen : public CodegenBase {
   void VisitStmt_(const ir::AssignStmtPtr& op) override;
   void VisitStmt_(const ir::ForStmtPtr& op) override;
   void VisitStmt_(const ir::IfStmtPtr& op) override;
+  void VisitStmt_(const ir::WhileStmtPtr& op) override;
   void VisitStmt_(const ir::YieldStmtPtr& op) override;
   void VisitStmt_(const ir::EvalStmtPtr& op) override;
 
@@ -304,6 +305,9 @@ class PTOCodegen : public CodegenBase {
 
   /// Helper for comparison expression visitors
   void VisitCmpExpr(const ir::BinaryExprPtr& op, const std::string& predicate);
+
+  /// Get MLIR type string for a scalar iter_arg/return_var (e.g., "index", "i1", "f32")
+  std::string GetScalarIterArgTypeString(const std::shared_ptr<const ir::ScalarType>& scalar_type) const;
 };
 
 }  // namespace codegen
