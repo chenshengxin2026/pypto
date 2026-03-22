@@ -47,12 +47,12 @@ from pypto.runtime import RunConfig, TensorSpec, run
 @pl.function(type=pl.FunctionType.InCore)
 def kernel_init_inplace(
     oi: pl.Out[pl.Tensor[[16, 128], pl.FP32]],
-    li: pl.Out[pl.Tensor[[16, 1], pl.FP32]],
-    mi: pl.Out[pl.Tensor[[16, 1], pl.FP32]],
+    li: pl.Out[pl.Tensor[[16, 1], pl.FP32, pl.DN]],
+    mi: pl.Out[pl.Tensor[[16, 1], pl.FP32, pl.DN]],
 ) -> tuple[
     pl.Tensor[[16, 128], pl.FP32],
-    pl.Tensor[[16, 1], pl.FP32],
-    pl.Tensor[[16, 1], pl.FP32],
+    pl.Tensor[[16, 1], pl.FP32, pl.DN],
+    pl.Tensor[[16, 1], pl.FP32, pl.DN],
 ]:
     """Initialize inplace accumulators to zero (VECTOR)."""
     return oi, li, mi
@@ -272,15 +272,23 @@ def build_paged_attention_program(
                     cur_offset = b_idx * q_head_num + q_idx * q_tile
 
                     # Create inplace accumulators for this q_tile group
-                    oi: pl.Tensor[[q_tile, head_dim_cfg], pl.FP32] = pl.create_tensor(
+                    oi_buf: pl.Tensor[[q_tile, head_dim_cfg], pl.FP32] = pl.create_tensor(
                         [q_tile, head_dim_cfg],
                         dtype=pl.FP32,
                     )
-                    li_update: pl.Tensor[[q_tile, 1], pl.FP32] = pl.create_tensor([q_tile, 1], dtype=pl.FP32)
-                    mi_update: pl.Tensor[[q_tile, 1], pl.FP32] = pl.create_tensor([q_tile, 1], dtype=pl.FP32)
+                    li_buf: pl.Tensor[[q_tile, 1], pl.FP32, pl.DN] = pl.create_tensor(
+                        [q_tile, 1],
+                        dtype=pl.FP32,
+                        layout=pl.DN,
+                    )
+                    mi_buf: pl.Tensor[[q_tile, 1], pl.FP32, pl.DN] = pl.create_tensor(
+                        [q_tile, 1],
+                        dtype=pl.FP32,
+                        layout=pl.DN,
+                    )
 
                     # Initialize accumulators via shared module-level InCore kernel
-                    oi, li_update, mi_update = kernel_init_inplace(oi, li_update, mi_update)
+                    oi, li_update, mi_update = kernel_init_inplace(oi_buf, li_buf, mi_buf)
 
                     for bn in pl.range(bn_this_batch):
                         # Query view: row offset = b_idx * num_heads + q_idx * q_tile
@@ -307,35 +315,45 @@ def build_paged_attention_program(
                             [kv_block_row, 0],
                         )
 
-                        sij: pl.Tensor[[q_tile, block_size_cfg], pl.FP32] = pl.create_tensor(
+                        sij_buf: pl.Tensor[[q_tile, block_size_cfg], pl.FP32] = pl.create_tensor(
                             [q_tile, block_size_cfg],
                             dtype=pl.FP32,
                         )
 
                         # QK matmul (CUBE) via shared module-level InCore kernel
-                        sij = kernel_qk_matmul(qi, kj, sij)
+                        sij = kernel_qk_matmul(qi, kj, sij_buf)
                         sij_valid: pl.Tensor[[q_tile, valid_len], pl.FP32] = pl.slice(
                             sij,
                             [q_tile, valid_len],
                             [0, 0],
                         )
 
-                        pij_f16: pl.Tensor[[q_tile, block_size_cfg], pl.BF16] = pl.create_tensor(
+                        pij_f16_buf: pl.Tensor[[q_tile, block_size_cfg], pl.BF16] = pl.create_tensor(
                             [q_tile, block_size_cfg],
                             dtype=pl.BF16,
                         )
-                        mi: pl.Tensor[[q_tile, 1], pl.FP32] = pl.create_tensor([q_tile, 1], dtype=pl.FP32)
-                        li: pl.Tensor[[q_tile, 1], pl.FP32] = pl.create_tensor([q_tile, 1], dtype=pl.FP32)
+                        mi_sm_buf: pl.Tensor[[q_tile, 1], pl.FP32] = pl.create_tensor(
+                            [q_tile, 1], dtype=pl.FP32
+                        )
+                        li_sm_buf: pl.Tensor[[q_tile, 1], pl.FP32] = pl.create_tensor(
+                            [q_tile, 1], dtype=pl.FP32
+                        )
 
                         # Softmax prepare (VECTOR) via shared module-level InCore kernel
-                        pij_f16, mi, li = kernel_softmax_prepare(sij_valid, 1.0, pij_f16, mi, li)  # type: ignore[reportArgumentType]
+                        pij_f16, mi, li = kernel_softmax_prepare(
+                            sij_valid,
+                            1.0,  # type: ignore[reportArgumentType]
+                            pij_f16_buf,
+                            mi_sm_buf,
+                            li_sm_buf,
+                        )
 
-                        oi_tmp: pl.Tensor[[q_tile, head_dim_cfg], pl.FP32] = pl.create_tensor(
+                        oi_tmp_buf: pl.Tensor[[q_tile, head_dim_cfg], pl.FP32] = pl.create_tensor(
                             [q_tile, head_dim_cfg],
                             dtype=pl.FP32,
                         )
                         # PV matmul (CUBE) via shared module-level InCore kernel
-                        oi_tmp = kernel_pv_matmul(pij_f16, vj, oi_tmp)
+                        oi_tmp = kernel_pv_matmul(pij_f16, vj, oi_tmp_buf)
 
                         # Conditional flags
                         if bn == 0:
@@ -348,14 +366,14 @@ def build_paged_attention_program(
                             is_last: pl.Scalar[pl.INT64] = pl.yield_(0)
 
                         # Output view: same row offset as query view
-                        out_view: pl.Tensor[[q_tile, head_dim_cfg], pl.FP32] = pl.slice(
+                        out_view_buf: pl.Tensor[[q_tile, head_dim_cfg], pl.FP32] = pl.slice(
                             out,
                             [q_tile, head_dim_cfg],
                             [cur_offset, 0],
                         )
                         # Online softmax update via shared module-level InCore kernel
                         mi_update, li_update, oi, out_view = kernel_online_update(
-                            mi, li, oi_tmp, mi_update, li_update, oi, out_view, is_first, is_last
+                            mi, li, oi_tmp, mi_update, li_update, oi, out_view_buf, is_first, is_last
                         )
 
             return out
