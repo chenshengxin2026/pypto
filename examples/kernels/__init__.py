@@ -18,6 +18,7 @@ Kernel examples — single-kernel programs, ordered by complexity.
   06_softmax.py        — numerically stable row-wise softmax
   07_normalization.py  — RMSNorm, LayerNorm
   08_assemble.py       — tile assembly patterns (Acc->Mat, Vec->Vec)
+  09_dyn_valid_shape.py — dynamic valid_shape via if/else and loop patterns
 """
 
 import importlib
@@ -32,6 +33,7 @@ _ALIASES = {
     "softmax": "06_softmax",
     "normalization": "07_normalization",
     "assemble": "08_assemble",
+    "dyn_valid_shape": "09_dyn_valid_shape",
 }
 
 for _alias, _numbered in _ALIASES.items():
