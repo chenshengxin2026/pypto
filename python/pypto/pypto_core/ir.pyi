@@ -381,14 +381,14 @@ class TensorView:
     @overload
     def __init__(
         self,
-        stride: Sequence[Expr],
+        stride: Sequence[Expr | int],
         layout: TensorLayout,
-        valid_shape: Sequence[Expr] = ...,
+        valid_shape: Sequence[Expr | int] = ...,
     ) -> None:
         """Create a tensor view with stride, layout and optional valid shape.
 
         Args:
-            stride: Stride for each dimension
+            stride: Stride for each dimension (Expr or int, ints auto-converted to ConstInt)
             layout: Tensor layout type (ND, DN, or NZ)
             valid_shape: Valid shape for each dimension (optional, defaults to empty)
         """
@@ -502,9 +502,9 @@ class TileView:
     @overload
     def __init__(
         self,
-        valid_shape: Sequence[Expr],
-        stride: Sequence[Expr],
-        start_offset: Expr,
+        valid_shape: Sequence[Expr | int],
+        stride: Sequence[Expr | int],
+        start_offset: Expr | int,
         blayout: TileLayout = ...,
         slayout: TileLayout = ...,
         fractal: int = ...,
@@ -513,9 +513,9 @@ class TileView:
         """Create a tile view with all parameters.
 
         Args:
-            valid_shape: Valid shape dimensions
-            stride: Stride for each dimension
-            start_offset: Starting offset
+            valid_shape: Valid shape dimensions (Expr or int, ints auto-converted to ConstInt)
+            stride: Stride for each dimension (Expr or int, ints auto-converted to ConstInt)
+            start_offset: Starting offset (Expr or int, int auto-converted to ConstInt)
             blayout: Block layout (default: row_major)
             slayout: Scatter layout (default: none_box)
             fractal: Fractal size (default: 512)
