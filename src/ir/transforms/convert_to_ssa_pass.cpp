@@ -268,7 +268,7 @@ class SSAConverter {
 
   class ExprSubstituter : public IRMutator {
    public:
-    explicit ExprSubstituter(const std::unordered_map<const Var*, VarPtr>& versions) : versions_(versions) {}
+    explicit ExprSubstituter(SSAConverter& converter) : converter_(converter), versions_(converter.cur_) {}
 
    protected:
     ExprPtr VisitExpr_(const VarPtr& op) override {
@@ -279,39 +279,61 @@ class SSAConverter {
       auto it = versions_.find(op.get());
       return it != versions_.end() ? it->second : op;
     }
+    ExprPtr VisitExpr_(const CallPtr& op) override {
+      // Substitute arguments first (base class recurses into nested Calls)
+      auto result = IRMutator::VisitExpr_(op);
+      // Then substitute within the Call's return type (e.g., TensorView.valid_shape)
+      auto call = std::static_pointer_cast<const Call>(result);
+      auto new_type = converter_.SubstType(call->GetType());
+      if (new_type.get() != call->GetType().get()) {
+        return std::make_shared<const Call>(call->op_, call->args_, call->kwargs_, new_type, call->span_);
+      }
+      return result;
+    }
 
    private:
+    SSAConverter& converter_;
     const std::unordered_map<const Var*, VarPtr>& versions_;
   };
 
-  ExprPtr SubstExpr(const ExprPtr& e) { return e ? ExprSubstituter(cur_).VisitExpr(e) : e; }
+  ExprPtr SubstExpr(const ExprPtr& e) { return e ? ExprSubstituter(*this).VisitExpr(e) : e; }
+
+  /// Substitute all expressions in a vector, returning the new vector and whether anything changed.
+  std::pair<std::vector<ExprPtr>, bool> SubstExprVec(const std::vector<ExprPtr>& vec) {
+    std::vector<ExprPtr> out;
+    bool changed = false;
+    out.reserve(vec.size());
+    for (const auto& e : vec) {
+      auto ne = SubstExpr(e);
+      if (ne != e) changed = true;
+      out.push_back(ne);
+    }
+    return {std::move(out), changed};
+  }
 
   TypePtr SubstType(const TypePtr& type) {
     if (!type) return type;
     if (auto t = As<TensorType>(type)) {
-      std::vector<ExprPtr> shape;
-      bool changed = false;
-      for (const auto& d : t->shape_) {
-        auto nd = SubstExpr(d);
-        if (nd != d) changed = true;
-        shape.push_back(nd);
+      auto [shape, changed] = SubstExprVec(t->shape_);
+      std::optional<TensorView> new_tv = t->tensor_view_;
+      if (t->tensor_view_.has_value()) {
+        const auto& tv = t->tensor_view_.value();
+        auto [vs, vs_changed] = SubstExprVec(tv.valid_shape);
+        auto [st, st_changed] = SubstExprVec(tv.stride);
+        if (vs_changed || st_changed) {
+          changed = true;
+          new_tv = TensorView(std::move(st), tv.layout, std::move(vs));
+        }
       }
       if (changed) {
-        return std::make_shared<TensorType>(std::move(shape), t->dtype_, t->memref_, t->tensor_view_);
+        return std::make_shared<TensorType>(std::move(shape), t->dtype_, t->memref_, std::move(new_tv));
       }
       return type;
     }
     if (auto t = As<TileType>(type)) {
       if (!t->tile_view_.has_value()) return type;
       const auto& tv = t->tile_view_.value();
-      if (tv.valid_shape.empty()) return type;
-      std::vector<ExprPtr> vs;
-      bool changed = false;
-      for (const auto& v : tv.valid_shape) {
-        auto nv = SubstExpr(v);
-        if (nv != v) changed = true;
-        vs.push_back(nv);
-      }
+      auto [vs, changed] = SubstExprVec(tv.valid_shape);
       if (!changed) return type;
       TileView ntv = tv;
       ntv.valid_shape = std::move(vs);
