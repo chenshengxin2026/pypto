@@ -2,6 +2,9 @@
 
 **English** | [Chinese](README.zh-CN.md)
 
+Experimental [WSE Calendar simulation on A3](docs/en/dev/wse-mock/README.md):
+changes, matching repository branches, build instructions, and FFN validation.
+
 ## Overview
 
 PyPTO (pronounced: pai p-t-o) is a high-performance programming framework for AI accelerators, designed to simplify the development of complex fused operators and entire model networks while maintaining high-performance computing capabilities. The framework adopts an innovative **PTO (Parallel Tensor/Tile Operation) programming paradigm**, with a **Tile-based programming model** as its core design philosophy. Through a multi-level intermediate representation (IR) system, it compiles AI model applications built via APIs from high-level Tensor graphs step by step into hardware instructions, ultimately generating executable code that runs efficiently on target platforms.

@@ -2,6 +2,9 @@
 
 [English](README.md) | **中文**
 
+实验性 [WSE Calendar A3 仿真](docs/zh/dev/wse-mock/README.md)：
+修改说明、配套仓库分支、构建方法与 FFN 精度验证。
+
 ## 概述
 
 PyPTO（发音：pai p-t-o）是一个面向 AI 加速器的高性能编程框架，旨在简化复杂融合算子和整网模型的开发，同时保持高性能计算能力。该框架采用创新的 **PTO（Parallel Tensor/Tile Operation）编程范式**，以 **Tile 编程模型**为核心设计理念。通过多级中间表示 (IR) 系统，将通过 API 构建的 AI 模型应用从高层 Tensor 图逐步编译为硬件指令，最终生成在目标平台上高效运行的可执行代码。

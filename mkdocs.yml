@@ -84,6 +84,7 @@ plugins:
             Language: 语言
             Code Generation: 代码生成
             Backend: 后端
+            WSE Simulation: WSE 仿真
             Debug: 调试
             Distributed: 分布式
   # Both locales render the same API bodies, so every mkdocstrings identifier has
@@ -381,6 +382,9 @@ nav:
       - Backend:
           - en/dev/backend/index.md
           - en/dev/backend/00-backend_handler.md
+      - WSE Simulation:
+          - en/dev/wse-mock/README.md
+          - en/dev/wse-calendar-a3.md
       - Debug:
           - en/dev/debug/index.md
           - en/dev/debug/00-torch_codegen.md
