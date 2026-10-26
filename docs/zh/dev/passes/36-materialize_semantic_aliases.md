@@ -203,4 +203,4 @@ pipeline-slot 元数据）的变量渲染成同一个 `tile_buf` handle，因此
 解决。未选中 kernel 和显式 Off 模式保持原有 Tile 行为。
 
 默认 Buffer 路径在存储合法化前选择完整支持的 kernel，详见
-[整函数选择](55-lower_tile_to_buffer.md#默认整函数选择)。
+[整函数选择](56-lower_tile_to_buffer.md#默认整函数选择)。

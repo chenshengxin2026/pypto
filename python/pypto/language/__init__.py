@@ -60,7 +60,7 @@ from pypto.pypto_core.ir import (
 
 from . import _dump as _dump
 from . import arg_direction as adir
-from . import optimizations, parser
+from . import optimizations, parser, wse
 from .dsl_api import (
     at,
     cluster,
@@ -313,6 +313,7 @@ TASK_ID = DataType.TASK_ID
 TaskId = Scalar[TASK_ID]
 
 __all__ = [
+    "wse",
     "jit",
     "JITFunction",
     "function",

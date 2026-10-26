@@ -1157,6 +1157,9 @@ def _generate_kernel_wrapper(
         call_args_list = call_args_list + ["__pypto_spmd_block_idx", "__pypto_spmd_block_num"]
     if wrapper_uses_subblock:
         call_args_list = call_args_list + ["__pypto_spmd_subblock_idx"]
+    if _function_uses_ops(func, frozenset({_ir_core.get_op("tile.wse_allgather").name})):
+        # The WSE runner appends the launch-owned context after ordinary ABI args.
+        call_args_list.append(f"args[{len(var_names)}]")
     call_args = ", ".join(call_args_list)
 
     wrapper_func = (
@@ -2208,6 +2211,15 @@ def _generate_single_chip(
         ),
         None,
     )
+
+    if orch_func is not None and any(
+        _function_uses_ops(func, frozenset({_ir_core.get_op("tile.wse_allgather").name}))
+        for func in transformed_program.functions.values()
+    ):
+        raise ValueError(
+            "WSE Calendar requires simpler.wse deployment bindings; compile standalone "
+            "@pl.jit.incore kernels and launch them with the WSE adapter"
+        )
 
     groups, ungrouped = _build_group_mapping(transformed_program)
 

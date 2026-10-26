@@ -78,6 +78,7 @@ TENSOR_OPTIMIZATION_PASSES = [
     "ClassifyIterArgCarry",
     "InsertCommFence",
     "MaterializeValidShapeSymbols",
+    "FinalizeWseCalendar",
     "LowerTileToBuffer",
 ]
 

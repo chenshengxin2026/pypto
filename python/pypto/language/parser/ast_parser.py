@@ -7211,6 +7211,11 @@ class ASTParser:
             op_name = attrs[2]
             return self._parse_system_op(op_name, call)
 
+        if len(attrs) == 3 and attrs[:2] == ["pl", "wse"]:
+            from .. import wse  # noqa: PLC0415
+
+            return self._dispatch_op(wse, "pl.wse", attrs[2], call)
+
         # pl.array.{operation} (3-segment)
         if len(attrs) >= 3 and attrs[0] == "pl" and attrs[1] == "array":
             op_name = attrs[2]
@@ -9226,7 +9231,9 @@ class ASTParser:
                 continue
 
             # Handle dtype specially
-            if key == "dtype":
+            if key == "group" and isinstance(value, ast.Call) and ast.unparse(value.func) == "pl.wse.Group":
+                kwargs[key] = self.expr_evaluator.eval_expr(value)
+            elif key == "dtype":
                 kwargs[key] = self.type_resolver.resolve_dtype(value)
             elif isinstance(value, ast.Constant):
                 kwargs[key] = value.value

@@ -77,6 +77,8 @@ bool IsSideEffectOp(const StmtPtr& stmt) {
     const auto& registry = OpRegistry::GetInstance();
     auto validated = [&registry](const char* op_name) { return registry.GetOp(op_name)->name_; };
     return std::unordered_set<std::string>{validated("tile.tpush_to_aiv"),
+                                           validated("tensor.wse_allgather"),
+                                           validated("tile.wse_allgather"),
                                            validated("tile.tpush_to_aic"),
                                            validated("tile.tpop_from_aic"),
                                            validated("tile.tpop_from_aiv"),

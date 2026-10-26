@@ -55,7 +55,18 @@ using transform_utils::GetLastYieldStmt;
 namespace {
 
 // Look up input constraints for an op. Returns nullptr if none.
-const std::vector<std::vector<MemorySpace>>* GetInputConstraints(const std::string& op_name) {
+const std::vector<std::vector<MemorySpace>>* GetInputConstraints(const CallPtr& call) {
+  const auto& op_name = call->op_->name_;
+  if (IsOp(call, "tile.store") && !call->args_.empty()) {
+    auto tile = As<TileType>(call->args_[0]->GetType());
+    if (tile && (!tile->tile_view_ || tile->tile_view_->slayout != TileLayout::none_box ||
+                 tile->tile_view_->blayout != TileLayout::row_major)) {
+      // Flat L1 can DMA directly to ND GM. Keep the established Vec staging
+      // path for boxed layouts, whose store needs a layout conversion.
+      static const std::vector<std::vector<MemorySpace>> boxed_store{{MemorySpace::Vec, MemorySpace::Acc}};
+      return &boxed_store;
+    }
+  }
   auto& registry = OpRegistry::GetInstance();
   if (!registry.IsRegistered(op_name)) return nullptr;
   const auto& spec_opt = registry.GetEntry(op_name).GetMemorySpec();
@@ -576,7 +587,7 @@ class MoveCollector : public IRVisitor {
   std::set<MoveKey, MoveKeyLess> needed_moves_;
 
   void CheckInputConstraints(const CallPtr& call) {
-    const auto* constraints = GetInputConstraints(call->op_->name_);
+    const auto* constraints = GetInputConstraints(call);
     if (!constraints) return;
 
     for (size_t i = 0; i < constraints->size() && i < call->args_.size(); ++i) {
@@ -762,7 +773,7 @@ class TileMemorySpaceMutator : public IRMutator {
   }
 
   ExprPtr VisitExpr_(const CallPtr& op) override {
-    const auto* constraints = GetInputConstraints(op->op_->name_);
+    const auto* constraints = GetInputConstraints(op);
 
     std::vector<ExprPtr> new_args;
     CallArgReplacements arg_replacements;
@@ -1038,7 +1049,7 @@ class TileMemorySpaceMutator : public IRMutator {
     }
     if (!call) return;
 
-    const auto* constraints = GetInputConstraints(call->op_->name_);
+    const auto* constraints = GetInputConstraints(call);
     if (!constraints) return;
 
     // Look up backend layout spec so tile.move carries the correct layout for the consumer.
@@ -1291,7 +1302,7 @@ class TileMemoryInferredVerifier : public IRVisitor {
   std::string func_name_;
 
   void VerifyInputConstraints(const CallPtr& call) {
-    const auto* constraints = GetInputConstraints(call->op_->name_);
+    const auto* constraints = GetInputConstraints(call);
     if (!constraints) return;
 
     for (size_t i = 0; i < constraints->size() && i < call->args_.size(); ++i) {

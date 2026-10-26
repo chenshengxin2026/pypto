@@ -27,6 +27,10 @@ not a table — see [Tutorials](../tutorials/index.md), or `examples/beginner/` 
 
 ## See Also
 
+`pl.wse` provides ordered static groups and synchronous rank-2 FP16 AllGather
+for the A3 Calendar adapter. See [WSE FFN on A3](../../dev/wse-a3.md) for its
+constraints, four-repository setup and real-device validation entry point.
+
 - [Language Guide](../language/index.md) — the constructs these operators appear inside.
 - [Memory and Data Movement](../language/03-memory.md) — the movement operators in context.
 - [IR Operators](../../dev/ir/05-operators.md) — the operator registry these names resolve to.

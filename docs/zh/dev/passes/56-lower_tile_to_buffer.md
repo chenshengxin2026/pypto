@@ -113,7 +113,7 @@ with passes.PassContext([], enable_buffer_ir=True):
     lowered = manager.run_passes(program)
 ```
 
-`LowerTileToBuffer` 位于 `MaterializeValidShapeSymbols` 之后。
+`LowerTileToBuffer` 位于 `FinalizeWseCalendar` 之后。
 存储修复和 `VerifyTileStorage` 位于地址分配之前。PYPTO 与 DSA_RP 提供最终有效字节地址，
 PTOAS 提供不带地址的分配身份。即使关闭自动验证，本 pass 也会重新检查存储闭合性。
 地址规划器还会检查有效地址区间的重叠。

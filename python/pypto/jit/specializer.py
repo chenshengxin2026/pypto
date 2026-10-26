@@ -357,6 +357,10 @@ def _render_free_value(value: Any) -> ast.expr | None:
     of those -- a shape held in a module constant, for instance. A sequence renders only
     when every element does, so a half-rendered list can never reach the parser.
     """
+    from pypto.language.wse import Group  # noqa: PLC0415
+
+    if isinstance(value, Group):
+        return ast.parse(f"pl.wse.Group(block_ids={value.block_ids!r})", mode="eval").body
     if isinstance(value, type):
         return None
     if isinstance(value, enum.Enum):

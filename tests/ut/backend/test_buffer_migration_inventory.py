@@ -43,7 +43,7 @@ def _audit_issues(
     """Compare declared migration work against independent runtime registrations."""
     issues = []
     family_ids = [family.name.split(":", 1)[0] for family in families]
-    expected_ids = {f"G{i:02}" for i in range(1, 23)}
+    expected_ids = {f"G{i:02}" for i in range(1, 24)}
     if set(family_ids) != expected_ids:
         issues.append(f"Recipe family IDs differ: {sorted(set(family_ids) ^ expected_ids)}")
     if len(family_ids) != len(set(family_ids)):
@@ -138,8 +138,8 @@ def test_every_backend_entry_has_one_current_migration_classification(registry_s
     assert not issues, "\n".join(issues)
 
     # These are audited baseline sizes, not a count of implemented recipes.
-    assert len(MIGRATION_FAMILIES) == 22
-    assert sum(len(family.operations) for family in MIGRATION_FAMILIES) == 170
+    assert len(MIGRATION_FAMILIES) == 23
+    assert sum(len(family.operations) for family in MIGRATION_FAMILIES) == 171
     assert len(HISTORICAL_CALLBACKS) == 8
 
 

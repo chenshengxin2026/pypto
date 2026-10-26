@@ -2631,6 +2631,13 @@ def scatter_mask(
     return scatter(input, mask_pattern=mask_pattern, dst=dst, span=span)
 
 
+def wse_allgather(input: Expr, *, members: str, axis: int, span: Span | None = None) -> Call:
+    """IR builder for the printed WSE tensor op; user code uses pl.wse.allgather."""
+    return _ir_core.create_op_call(
+        "tensor.wse_allgather", [input], {"members": members, "axis": axis}, _get_span_or_capture(span)
+    )
+
+
 def get_block_idx(span: Span | None = None) -> Call:
     """Get the current block index (tensor-scope alias of ``tile.get_block_idx``).
 

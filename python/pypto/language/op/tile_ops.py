@@ -402,6 +402,7 @@ def load(
     target_memory: MemorySpace | None = None,
     clamp: bool = False,
     cache: CachePolicy | None = None,
+    flat_layout: bool = False,
 ) -> Tile:
     """Copy data from tensor to unified buffer (tile).
 
@@ -432,6 +433,7 @@ def load(
             load asserts ``offsets + valid_shape`` stays inside the source and is
             rejected when that provably fails; ``clamp=True`` cuts the request back
             to the source edge instead.
+        flat_layout: Use packed row-major L1 storage for an ND input in Mat memory.
         cache: GM cache-access policy for *this* read. ``None`` (the default)
             states no policy, leaving any scope-level declaration to apply.
             ``CachePolicy.BYPASS`` declares a streaming read — it asserts the
@@ -466,6 +468,7 @@ def load(
         target_memory,
         clamp=clamp,
         cache=None if cache is None else int(cache),
+        flat_layout=flat_layout,
     )
     return Tile(expr=call_expr)
 

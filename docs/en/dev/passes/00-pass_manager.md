@@ -160,6 +160,7 @@ struct PassProperties {
 | ClassifyIterArgCarry | CallDirectionsResolved, RuntimeScopesMaterialized | IterArgCarryClassified, RuntimeScopesMaterialized | — |
 | InsertCommFence | SplitIncoreOrch | — | — |
 | MaterializeValidShapeSymbols | — | — | — |
+| FinalizeWseCalendar | — | — | — |
 
 The table lists every registered pass, in `Default`-strategy execution order. Update the row
 here whenever you add a pass or change its declaration.
@@ -527,7 +528,7 @@ The PTO-oriented tile stage of `Default` is:
 39. [`MaterializeRuntimeScopes`](51-materialize_runtime_scopes.md) (inserts AUTO RuntimeScopeStmt so orchestration codegen emits SIMPLER_SCOPE 1:1)
 40. [`ClassifyIterArgCarry`](52-classify_iter_arg_carry.md) (stamps each ForStmt iter_arg as trivial alias / rebind carry, and sizes manual-scope TaskId fence arrays)
 41. [`InsertCommFence`](53-insert_comm_fence.md) (inserts a whole-tensor system.cacheinvalid + GM system.fence between each publishing write and the pld.system.notify that releases it; runs after every statement-reordering pass so the inserted ops stay adjacent to their notify through codegen)
-42. [`MaterializeValidShapeSymbols`](54-materialize_valid_shape_symbols.md) (runs dead last; turns each device-kernel valid_shape symbol the kernel cannot bind into a leading Scalar[INDEX] param fed from the call site's actual valid extent)
+42. [`MaterializeValidShapeSymbols`](54-materialize_valid_shape_symbols.md) (turns each device-kernel valid_shape symbol the kernel cannot bind into a leading Scalar[INDEX] param fed from the call site's actual valid extent)
 
 [`ResolveBackendOpLayouts`](23-resolve_backend_op_layouts.md) repairs
 backend-constrained elementwise tile ops using registered layout metadata.
@@ -557,8 +558,12 @@ so the call might have observable side effects. The DCE step recurses into
 `ForStmt`/`IfStmt`/`WhileStmt`/`ScopeStmt` bodies so nested dead scalars
 are cleaned up as well.
 
-With `enable_buffer_ir=True`, the final [LowerTileToBuffer](55-lower_tile_to_buffer.md)
-pass runs after `MaterializeValidShapeSymbols` and replaces planned device Tile
+[FinalizeWseCalendar](55-finalize_wse_calendar.md) runs after
+`MaterializeValidShapeSymbols` to validate allocated L1 geometry and finalize
+remote byte counts for synchronous WSE collectives. It is a no-op without WSE.
+
+With `enable_buffer_ir=True`, the final [LowerTileToBuffer](56-lower_tile_to_buffer.md)
+pass runs after `FinalizeWseCalendar` and replaces planned device Tile
 storage with verified explicit Buffer operations. This migration option must
 remain unchanged between constructing and running the pass manager.
 
@@ -605,4 +610,4 @@ print(p.get_produced_properties())   # {SSAForm}
 fallback, then invalidates the lowered property. Pass order is unchanged.
 
 The default Buffer rollout selects complete supported kernels before storage
-legalization; see [whole-kernel selection](55-lower_tile_to_buffer.md#default-whole-kernel-selection).
+legalization; see [whole-kernel selection](56-lower_tile_to_buffer.md#default-whole-kernel-selection).

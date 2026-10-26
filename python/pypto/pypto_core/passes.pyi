@@ -394,6 +394,9 @@ def materialize_semantic_aliases() -> Pass:
 def verify_tile_storage(allocated: bool = False) -> Pass:
     """Verify canonical storage; allocated=True also checks effective address overlap."""
 
+def finalize_wse_calendar() -> Pass:
+    """Finalize static WSE receive contracts after storage planning."""
+
 def memory_reuse() -> Pass:
     """Create a memory reuse pass."""
 

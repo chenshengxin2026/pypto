@@ -207,6 +207,7 @@ def load(
     clamp: bool = False,
     span: Span | None = None,
     cache: int | None = None,
+    flat_layout: bool = False,
 ) -> Call:
     """Copy data from tensor to specified memory level.
 
@@ -247,6 +248,7 @@ def load(
             stamp one later. An explicit 0 is NOT the same as ``None``: it is
             recorded, and it is what makes ``cache=CachePolicy.DEFAULT`` opt a
             single read back into the cache inside a bypassing scope.
+        flat_layout: Use packed row-major L1 storage for an ND input in Mat memory.
 
     Returns:
         Call expression that returns a TileType with the copied data
@@ -281,6 +283,8 @@ def load(
     _validate_offsets_shapes(offsets_tuple, shapes_tuple)
 
     kwargs: dict[str, Any] = {}
+    if flat_layout:
+        kwargs["flat_layout"] = True
     if target_memory is not None:
         kwargs["target_memory"] = target_memory
     if clamp:
@@ -3738,6 +3742,16 @@ def mrgsort(
         # 4-way merge
         args = [src0, src1, src2, src3, tmp]
     return _ir_core.create_op_call("tile.mrgsort_format2", args, kwargs, actual_span)
+
+
+def wse_allgather(
+    input: Expr, *, members: str, axis: int, exp_bytes: int | None = None, span: Span | None = None
+) -> Call:
+    """IR builder for printed Calendar ops; exp_bytes is finalized by the compiler."""
+    kwargs: dict[str, Any] = {"members": members, "axis": axis}
+    if exp_bytes is not None:
+        kwargs["exp_bytes"] = exp_bytes
+    return _ir_core.create_op_call("tile.wse_allgather", [input], kwargs, _get_span_or_capture(span))
 
 
 def mrgsort_format1(src0: Expr, block_len: int | Expr, span: Span | None = None) -> Call:

@@ -163,6 +163,7 @@ Pass MaterializeSemanticAliases();
 
 /// Verify canonical storage; allocated=true additionally checks effective address overlap.
 Pass VerifyTileStorage(bool allocated = false);
+Pass FinalizeWseCalendar();
 
 /**
  * @brief Create a memory reuse pass

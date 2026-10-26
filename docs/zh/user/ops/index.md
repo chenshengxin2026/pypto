@@ -19,6 +19,9 @@
 
 ## 另请参阅
 
+`pl.wse` 为 A3 Calendar 适配器提供有序静态组和同步二维 FP16 AllGather。
+约束、四仓配置和真实上板验证入口见 [A3 上的 WSE FFN](../../dev/wse-a3.md)。
+
 - [语言指南](../language/index.md) —— 这些算子所出现的那些构造。
 - [内存与数据搬运](../language/03-memory.md) —— 搬运类算子在上下文中的样子。
 - [IR 算子](../../dev/ir/05-operators.md) —— 这些名字所解析到的算子注册表。

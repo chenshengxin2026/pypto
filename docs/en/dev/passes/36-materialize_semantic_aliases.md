@@ -252,4 +252,4 @@ simultaneously overlapping destination windows must be resolved before final
 Buffer lowering. Unselected kernels and explicit Off mode retain their previous Tile behavior.
 
 The default Buffer rollout selects complete supported kernels before storage
-legalization; see [whole-kernel selection](55-lower_tile_to_buffer.md#default-whole-kernel-selection).
+legalization; see [whole-kernel selection](56-lower_tile_to_buffer.md#default-whole-kernel-selection).

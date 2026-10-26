@@ -316,6 +316,7 @@ class PassManager:
             # by here both are final, so no later pass has to account for the
             # appended parameter.
             passes.materialize_valid_shape_symbols,
+            passes.finalize_wse_calendar,
         )
         return tensor_prefix_passes + tensor_only_passes + tile_pto_passes
 

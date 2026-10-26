@@ -146,7 +146,7 @@ with passes.PassContext([], enable_buffer_ir=True):
     lowered = manager.run_passes(program)
 ```
 
-`LowerTileToBuffer` runs after `MaterializeValidShapeSymbols`. Storage repair
+`LowerTileToBuffer` runs after `FinalizeWseCalendar`. Storage repair
 and `VerifyTileStorage` precede address placement. PYPTO and DSA_RP provide final
 effective byte addresses; PTOAS provides allocation identities without addresses.
 The pass rechecks storage closure even when automatic verification is disabled.

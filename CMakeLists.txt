@@ -154,6 +154,7 @@ set(PYPTO_SOURCES
     src/ir/op/distributed/system.cpp
     src/ir/op/distributed/allreduce.cpp
     src/ir/op/distributed/intrinsics.cpp
+    src/ir/op/wse.cpp
     src/ir/op/prefetch/prefetch_async.cpp
     src/ir/op/tensor_ops/broadcast.cpp
     src/ir/op/tensor_ops/elementwise.cpp
@@ -240,6 +241,7 @@ set(PYPTO_SOURCES
     src/ir/transforms/mutator.cpp
     src/ir/transforms/normalize_stmt_structure_pass.cpp
     src/ir/transforms/op_conversion_registry.cpp
+    src/ir/transforms/finalize_wse_calendar_pass.cpp
     src/ir/transforms/outline_incore_scopes_pass.cpp
     src/ir/transforms/outline_cluster_scopes_pass.cpp
     src/ir/transforms/deduplicate_outlined_kernels_pass.cpp
@@ -396,6 +398,7 @@ set(PYPTO_SOURCES
     src/backend/common/pto_ops_memory.cpp
     src/backend/common/pto_ops_crosscore.cpp
     src/backend/common/pto_ops_distributed.cpp
+    src/backend/common/pto_ops_wse.cpp
     src/backend/common/pto_ops_prefetch.cpp
     src/backend/common/soc.cpp
 )

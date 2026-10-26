@@ -159,6 +159,7 @@ struct PassProperties {
 | ClassifyIterArgCarry | CallDirectionsResolved, RuntimeScopesMaterialized | IterArgCarryClassified, RuntimeScopesMaterialized | — |
 | InsertCommFence | SplitIncoreOrch | — | — |
 | MaterializeValidShapeSymbols | — | — | — |
+| FinalizeWseCalendar | — | — | — |
 
 本表按 `Default` 策略的执行顺序列出全部已注册 Pass。新增 Pass 或修改属性声明时，请同步更新
 此处对应的行。
@@ -523,7 +524,7 @@ with passes.PassContext([passes.VerificationInstrument(passes.VerificationMode.A
 39. [`MaterializeRuntimeScopes`](51-materialize_runtime_scopes.md)（插入 AUTO RuntimeScopeStmt，使 orchestration codegen 1:1 emit SIMPLER_SCOPE）
 40. [`ClassifyIterArgCarry`](52-classify_iter_arg_carry.md)（把每个 ForStmt iter_arg 标注为平凡别名 / 重绑定 carry，并为 manual-scope TaskId fence 数组定尺）
 41. [`InsertCommFence`](53-insert_comm_fence.md)（在每个发布性写入与释放它的 pld.system.notify 之间插入整张 tensor 的 system.cacheinvalid + GM system.fence；跑在所有语句重排 pass 之后，使插入的 op 一路到 codegen 都紧邻其 notify）
-42. [`MaterializeValidShapeSymbols`](54-materialize_valid_shape_symbols.md)（跑在最后；把设备侧 kernel 无法绑定的 valid_shape 符号转成前置的 Scalar[INDEX] 形参，由调用点传入实际有效范围）
+42. [`MaterializeValidShapeSymbols`](54-materialize_valid_shape_symbols.md)（把设备侧 kernel 无法绑定的 valid_shape 符号转成前置的 Scalar[INDEX] 形参，由调用点传入实际有效范围）
 
 [`ResolveBackendOpLayouts`](23-resolve_backend_op_layouts.md) 会根据
 backend 注册的 layout 元数据修复受约束的逐元素 tile 操作。对于当前 PTO
@@ -583,8 +584,12 @@ print(p.get_produced_properties())   # {SSAForm}
 - `tests/ut/ir/transforms/test_pass_manager.py` — PassManager 向后兼容性测试
 - `tests/ut/conftest.py` — 为所有测试启用 BEFORE_AND_AFTER 验证的 autouse fixture
 
-设置 `enable_buffer_ir=True` 时，最终的 [LowerTileToBuffer](55-lower_tile_to_buffer.md)
-位于 `MaterializeValidShapeSymbols` 之后，将完成规划的设备 Tile 存储转换为经过验证的显式 Buffer 操作。
+[FinalizeWseCalendar](55-finalize_wse_calendar.md) 位于
+`MaterializeValidShapeSymbols` 之后，根据分配后的 L1 形状校验并确定同步 WSE
+集合通信的远端字节数。不含 WSE 的程序不受影响。
+
+设置 `enable_buffer_ir=True` 时，最终的 [LowerTileToBuffer](56-lower_tile_to_buffer.md)
+位于 `FinalizeWseCalendar` 之后，将完成规划的设备 Tile 存储转换为经过验证的显式 Buffer 操作。
 创建和运行 pass manager 时必须保持该迁移选项一致。
 
 ### AIV split 验证属性交接
@@ -594,4 +599,4 @@ print(p.get_produced_properties())   # {SSAForm}
 属性失效。pass 顺序不变。
 
 默认 Buffer 路径在存储合法化前选择完整支持的 kernel，详见
-[整函数选择](55-lower_tile_to_buffer.md#默认整函数选择)。
+[整函数选择](56-lower_tile_to_buffer.md#默认整函数选择)。

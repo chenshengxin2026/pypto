@@ -393,7 +393,7 @@ bool UsesDefaultTileInputs(const CallPtr& call) {
   return !(IsOp(call, "tensor.slice") || IsOp(call, "tensor.assemble") || IsOp(call, "tensor.read") ||
            IsOp(call, "tensor.write") || IsOp(call, "tensor.expand_clone") || IsOp(call, "tensor.gather") ||
            IsOp(call, "tensor.paged_gather") || IsOp(call, "tensor.create_l1") ||
-           IsOp(call, "tensor.gather_row"));
+           IsOp(call, "tensor.gather_row") || IsOp(call, "tensor.wse_allgather"));
 }
 
 /**

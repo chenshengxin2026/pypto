@@ -355,6 +355,11 @@ MIGRATION_FAMILIES = (
             "prefetch.wait",
         ),
     ),
+    MigrationFamily(
+        "G23: Synchronous WSE Calendar",
+        ("tile.wse_allgather",),
+        targets=frozenset({backend.BackendType.Ascend910}),
+    ),
 )
 
 # These callbacks have no current IR registration. They are tracked separately

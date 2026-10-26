@@ -46,6 +46,7 @@
 #include "pypto/ir/transforms/utils/tile_conversion_utils.h"
 #include "pypto/ir/type.h"
 #include "pypto/ir/type_inference.h"
+#include "pypto/ir/wse.h"
 
 namespace pypto {
 namespace ir {
@@ -268,6 +269,23 @@ OpConversionRegistry& OpConversionRegistry::GetInstance() {
 }
 
 OpConversionRegistry::OpConversionRegistry() {
+  RegisterCustom("tensor.wse_allgather", [](const std::vector<ExprPtr>& args,
+                                            const std::vector<std::pair<std::string, std::any>>& kwargs,
+                                            const Span& span) {
+    auto& registry = OpRegistry::GetInstance();
+    auto input = std::dynamic_pointer_cast<const ShapedType>(args[0]->GetType());
+    std::vector<StmtPtr> prologue;
+    ExprPtr send = args[0];
+    if (!As<TileType>(send->GetType())) {
+      auto shape = MakeShapeTuple(input->shape_, span);
+      auto load = registry.Create("tile.load", {send, MakeZeroOffsets(2, span), shape, shape},
+                                  {{"target_memory", MemorySpace::Mat}, {"flat_layout", true}}, span);
+      auto var = std::make_shared<Var>("wse_send_l1", load->GetType(), span);
+      prologue.push_back(std::make_shared<AssignStmt>(var, load, span));
+      send = var;
+    }
+    return ConversionResult{prologue, registry.Create("tile.wse_allgather", {send}, kwargs, span)};
+  });
   RegisterScalarAndUnaryOps();
   RegisterBroadcastAndTransformOps();
   RegisterElementwiseBinaryOps();

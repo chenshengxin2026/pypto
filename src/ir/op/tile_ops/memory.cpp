@@ -377,6 +377,13 @@ TypePtr DeduceTileLoadType(const std::vector<ExprPtr>& args,
       << "The operator " << op_name
       << " cache kwarg must be CachePolicy.DEFAULT or CachePolicy.BYPASS, but got int " << cache;
 
+  if (GetKwargOr<bool>(kwargs, "flat_layout", false)) {
+    CHECK(target_memory_opt == MemorySpace::Mat && !source_is_dn)
+        << "flat_layout load requires ND input and Mat memory";
+    tile_view.blayout = TileLayout::row_major;
+    tile_view.slayout = TileLayout::none_box;
+  }
+
   // Return TileType with same dtype as tensor and TileView containing valid_shape.
   // When target_memory is specified, write it into memory_space_ so the constructed
   // type is internally coherent (tile_view layout and memory_space agree). This
@@ -1307,6 +1314,7 @@ REGISTER_OP("tile.load")
         "valid_shape",
         "Valid shape of tile in each dimension, in source tensor coordinates (TupleType of ScalarType). ")
     .set_attr<MemorySpace>("target_memory")
+    .set_attr<bool>("flat_layout")
     .set_attr<bool>("clamp")
     // Declared GM cache-access policy, carried as an int (``ir::CachePolicy``)
     // so serialization / structural comparison need no new enum arm.
@@ -1336,7 +1344,7 @@ REGISTER_OP("tile.store")
     // meaningless for a Vec source and rejected there by `AccToGmStoreValid`.
     .set_attr<double>("pre_quant")
     .set_attr<bool>("pre_relu")
-    .set_input_memory(0, {MemorySpace::Vec, MemorySpace::Acc})
+    .set_input_memory(0, {MemorySpace::Vec, MemorySpace::Acc, MemorySpace::Mat})
     .set_output_reuses_input(2)
     // A plain store overwrites the region it lands on: the untouched remainder
     // is neither loaded nor re-stored, so nothing moves *into* the kernel and

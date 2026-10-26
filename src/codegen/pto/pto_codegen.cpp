@@ -585,6 +585,9 @@ class MemRefCollectorVisitor : public ir::IRVisitor {
     return memref_tile_types_;
   }
 
+  /// Requests the hidden launch-owned WSE Calendar context argument.
+  [[nodiscard]] bool UsesWse() const { return uses_wse_; }
+
   /// Returns true when the visited body invokes prefetch.make_context. Drives
   /// PTOCodegen's decision to append the hidden runtime-owned SDMA workspace
   /// pointer to the emitted func.func signature.
@@ -632,6 +635,7 @@ class MemRefCollectorVisitor : public ir::IRVisitor {
 
   void VisitExpr_(const ir::CallPtr& op) override {
     if (op->op_) {
+      if (ir::IsOp(op, "tile.wse_allgather")) uses_wse_ = true;
       if (!uses_sdma_workspace_ && ir::IsOp(op, "prefetch.make_context")) {
         uses_sdma_workspace_ = true;
       }
@@ -663,6 +667,7 @@ class MemRefCollectorVisitor : public ir::IRVisitor {
   std::set<const ir::Var*> seen_bases_;
   std::map<const ir::Var*, std::shared_ptr<const TileType>> memref_tile_types_;
   std::set<uint64_t> iter_arg_ids_;
+  bool uses_wse_ = false;
   bool uses_sdma_workspace_ = false;
   bool uses_deferred_completion_ = false;
   bool uses_spmd_block_ops_ = false;
@@ -985,6 +990,8 @@ void PTOCodegen::GenerateFunction(const FunctionPtr& func) {
   if (func->body_) {
     collector.VisitStmt(func->body_);
   }
+  const bool uses_wse = collector.UsesWse();
+  if (uses_wse) fs_.used_ssa_names.insert("__wse_context");
   const bool uses_sdma_workspace = collector.UsesSdmaWorkspace();
   const bool uses_deferred_completion = collector.UsesDeferredCompletion();
   const bool uses_spmd_params = collector.UsesSpmdBlockOps();
@@ -1204,6 +1211,11 @@ void PTOCodegen::GenerateFunction(const FunctionPtr& func) {
   if (uses_subblock_param) {
     fs_.spmd_subblock_idx_arg = "%__pypto_spmd_subblock_idx";
     stream_ << ", " << fs_.spmd_subblock_idx_arg << ": i32";
+  }
+
+  if (uses_wse) {
+    if (!first_param) stream_ << ", ";
+    stream_ << "%__wse_context: i64";
   }
 
   stream_ << ")";

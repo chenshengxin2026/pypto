@@ -1,0 +1,700 @@
+{
+  "device": "npu:1",
+  "device_name": "Ascend910_9392",
+  "torch": "2.9.0+cpu",
+  "shape": [
+    16,
+    64,
+    128
+  ],
+  "members": [
+    2,
+    5,
+    9,
+    12
+  ],
+  "tolerance": {
+    "rtol": 0.002,
+    "atol": 0.0001
+  },
+  "runs": [
+    {
+      "reverse_mapping": false,
+      "iteration": 0,
+      "seed": 1026,
+      "max_abs_error": 3.0517578125e-05,
+      "rms_error": 1.0662403155947686e-06,
+      "z_max_abs_error": 5.960464477539063e-08,
+      "gather_bit_exact": true,
+      "status": {
+        "b0": [
+          [
+            0,
+            1024,
+            1,
+            2,
+            1
+          ],
+          [
+            0,
+            1024,
+            1,
+            5,
+            1
+          ]
+        ],
+        "b1": [
+          [
+            0,
+            1024,
+            2,
+            9,
+            2
+          ],
+          [
+            0,
+            1024,
+            2,
+            12,
+            2
+          ]
+        ],
+        "c0": [
+          [
+            0,
+            2048,
+            3,
+            2,
+            3
+          ],
+          [
+            0,
+            2048,
+            3,
+            9,
+            3
+          ]
+        ],
+        "c1": [
+          [
+            0,
+            2048,
+            4,
+            5,
+            4
+          ],
+          [
+            0,
+            2048,
+            4,
+            12,
+            4
+          ]
+        ],
+        "axis0": [
+          [
+            0,
+            64,
+            5,
+            9,
+            5
+          ],
+          [
+            0,
+            64,
+            5,
+            2,
+            5
+          ]
+        ],
+        "singleton": [
+          [
+            0,
+            0,
+            6,
+            17,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "reverse_mapping": false,
+      "iteration": 1,
+      "seed": 1027,
+      "max_abs_error": 0.0,
+      "rms_error": 0.0,
+      "z_max_abs_error": 5.960464477539063e-08,
+      "gather_bit_exact": true,
+      "status": {
+        "b0": [
+          [
+            0,
+            1024,
+            7,
+            2,
+            1
+          ],
+          [
+            0,
+            1024,
+            7,
+            5,
+            1
+          ]
+        ],
+        "b1": [
+          [
+            0,
+            1024,
+            8,
+            9,
+            2
+          ],
+          [
+            0,
+            1024,
+            8,
+            12,
+            2
+          ]
+        ],
+        "c0": [
+          [
+            0,
+            2048,
+            9,
+            2,
+            3
+          ],
+          [
+            0,
+            2048,
+            9,
+            9,
+            3
+          ]
+        ],
+        "c1": [
+          [
+            0,
+            2048,
+            10,
+            5,
+            4
+          ],
+          [
+            0,
+            2048,
+            10,
+            12,
+            4
+          ]
+        ],
+        "axis0": [
+          [
+            0,
+            64,
+            11,
+            9,
+            5
+          ],
+          [
+            0,
+            64,
+            11,
+            2,
+            5
+          ]
+        ],
+        "singleton": [
+          [
+            0,
+            0,
+            12,
+            17,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "reverse_mapping": false,
+      "iteration": 2,
+      "seed": 1028,
+      "max_abs_error": 0.0,
+      "rms_error": 0.0,
+      "z_max_abs_error": 2.384185791015625e-07,
+      "gather_bit_exact": true,
+      "status": {
+        "b0": [
+          [
+            0,
+            1024,
+            13,
+            2,
+            1
+          ],
+          [
+            0,
+            1024,
+            13,
+            5,
+            1
+          ]
+        ],
+        "b1": [
+          [
+            0,
+            1024,
+            14,
+            9,
+            2
+          ],
+          [
+            0,
+            1024,
+            14,
+            12,
+            2
+          ]
+        ],
+        "c0": [
+          [
+            0,
+            2048,
+            15,
+            2,
+            3
+          ],
+          [
+            0,
+            2048,
+            15,
+            9,
+            3
+          ]
+        ],
+        "c1": [
+          [
+            0,
+            2048,
+            16,
+            5,
+            4
+          ],
+          [
+            0,
+            2048,
+            16,
+            12,
+            4
+          ]
+        ],
+        "axis0": [
+          [
+            0,
+            64,
+            17,
+            9,
+            5
+          ],
+          [
+            0,
+            64,
+            17,
+            2,
+            5
+          ]
+        ],
+        "singleton": [
+          [
+            0,
+            0,
+            18,
+            17,
+            6
+          ]
+        ]
+      }
+    },
+    {
+      "reverse_mapping": true,
+      "iteration": 0,
+      "seed": 1026,
+      "max_abs_error": 3.0517578125e-05,
+      "rms_error": 1.0662403155947686e-06,
+      "z_max_abs_error": 5.960464477539063e-08,
+      "gather_bit_exact": true,
+      "status": {
+        "b0": [
+          [
+            0,
+            1024,
+            19,
+            2,
+            7
+          ],
+          [
+            0,
+            1024,
+            19,
+            5,
+            7
+          ]
+        ],
+        "b1": [
+          [
+            0,
+            1024,
+            20,
+            9,
+            8
+          ],
+          [
+            0,
+            1024,
+            20,
+            12,
+            8
+          ]
+        ],
+        "c0": [
+          [
+            0,
+            2048,
+            21,
+            2,
+            9
+          ],
+          [
+            0,
+            2048,
+            21,
+            9,
+            9
+          ]
+        ],
+        "c1": [
+          [
+            0,
+            2048,
+            22,
+            5,
+            10
+          ],
+          [
+            0,
+            2048,
+            22,
+            12,
+            10
+          ]
+        ],
+        "axis0": [
+          [
+            0,
+            64,
+            23,
+            9,
+            11
+          ],
+          [
+            0,
+            64,
+            23,
+            2,
+            11
+          ]
+        ],
+        "singleton": [
+          [
+            0,
+            0,
+            24,
+            17,
+            12
+          ]
+        ]
+      }
+    },
+    {
+      "reverse_mapping": true,
+      "iteration": 1,
+      "seed": 1027,
+      "max_abs_error": 0.0,
+      "rms_error": 0.0,
+      "z_max_abs_error": 5.960464477539063e-08,
+      "gather_bit_exact": true,
+      "status": {
+        "b0": [
+          [
+            0,
+            1024,
+            25,
+            2,
+            7
+          ],
+          [
+            0,
+            1024,
+            25,
+            5,
+            7
+          ]
+        ],
+        "b1": [
+          [
+            0,
+            1024,
+            26,
+            9,
+            8
+          ],
+          [
+            0,
+            1024,
+            26,
+            12,
+            8
+          ]
+        ],
+        "c0": [
+          [
+            0,
+            2048,
+            27,
+            2,
+            9
+          ],
+          [
+            0,
+            2048,
+            27,
+            9,
+            9
+          ]
+        ],
+        "c1": [
+          [
+            0,
+            2048,
+            28,
+            5,
+            10
+          ],
+          [
+            0,
+            2048,
+            28,
+            12,
+            10
+          ]
+        ],
+        "axis0": [
+          [
+            0,
+            64,
+            29,
+            9,
+            11
+          ],
+          [
+            0,
+            64,
+            29,
+            2,
+            11
+          ]
+        ],
+        "singleton": [
+          [
+            0,
+            0,
+            30,
+            17,
+            12
+          ]
+        ]
+      }
+    },
+    {
+      "reverse_mapping": true,
+      "iteration": 2,
+      "seed": 1028,
+      "max_abs_error": 0.0,
+      "rms_error": 0.0,
+      "z_max_abs_error": 2.384185791015625e-07,
+      "gather_bit_exact": true,
+      "status": {
+        "b0": [
+          [
+            0,
+            1024,
+            31,
+            2,
+            7
+          ],
+          [
+            0,
+            1024,
+            31,
+            5,
+            7
+          ]
+        ],
+        "b1": [
+          [
+            0,
+            1024,
+            32,
+            9,
+            8
+          ],
+          [
+            0,
+            1024,
+            32,
+            12,
+            8
+          ]
+        ],
+        "c0": [
+          [
+            0,
+            2048,
+            33,
+            2,
+            9
+          ],
+          [
+            0,
+            2048,
+            33,
+            9,
+            9
+          ]
+        ],
+        "c1": [
+          [
+            0,
+            2048,
+            34,
+            5,
+            10
+          ],
+          [
+            0,
+            2048,
+            34,
+            12,
+            10
+          ]
+        ],
+        "axis0": [
+          [
+            0,
+            64,
+            35,
+            9,
+            11
+          ],
+          [
+            0,
+            64,
+            35,
+            2,
+            11
+          ]
+        ],
+        "singleton": [
+          [
+            0,
+            0,
+            36,
+            17,
+            12
+          ]
+        ]
+      }
+    }
+  ],
+  "sha256": {
+    "axis0/ptoas/gather.pto": "04eb148f700fb6da85d7ff9c5ee4b0405e67f25dcc542ba733be52c14057e5f6",
+    "b0/ptoas/gather.pto": "b59876f7d5440c3934b07ffcd144ca260e78c9025db51f4decbaf829df211311",
+    "b1/ptoas/gather.pto": "124f36b413c337eecb0d0a5f71b8d00123e4742b401b62dd4282893efbb810c7",
+    "c0/ptoas/gather.pto": "a9561ef3520249fc8a95d15b98d511b15b3699a723413add7038e492c3f8ea3c",
+    "c1/ptoas/gather.pto": "eab01778747485a27b4d25e29d182fc38e6c7bd7f813ce19a613ad8f4a629fa3",
+    "down/ptoas/matmul.pto": "6618d9d8f126d3d7bab43793b1bbd372671b723f0b49a9fe8e21b0950256e1a7",
+    "gate_up/ptoas/matmul.pto": "f485165b586e17f544f330809e43bd34de9574db0fa87525daefa47e2e346bda",
+    "output_cast/ptoas/output_cast.pto": "2e656cd590f7e4f970a7357e1f7759e1a2cb870215ef324ca9db0c0c40835d19",
+    "singleton/ptoas/gather.pto": "b8134ab613c5267568fee2840b05043fa7e4fff8d2e7bc408a6ed4fb52f6a395",
+    "swiglu/ptoas/swiglu.pto": "8d8eafa80758d5d5e3540c15c3a7aad77bba3da705a14c1bc016e95042b102c4",
+    "axis0/kernels/aic/gather.cpp": "ab708a274b62767f178f8f034d80c3ee16b235adc5e40f968545982a7d5fff07",
+    "axis0/ptoas/gather.cpp": "958d3631b41ea20d7c179fbfdad4dfc64a54d126da6a1c8684754309c9b5986b",
+    "b0/kernels/aic/gather.cpp": "7dabc2d1892964c72862f5564051f887738f7bb62344c60f68f867f116a34372",
+    "b0/ptoas/gather.cpp": "bf1b9319406c1e344a32967f3bc662da6a231fd40248f3ce9d8e411af3a7b014",
+    "b1/kernels/aic/gather.cpp": "b24c528a67ad9afec0ef3aa17e3be3337e2b96739069bce15184d705b31c4b7a",
+    "b1/ptoas/gather.cpp": "e2a9a99c1a8cf1f886c63eab2a93540caa139cbe9d31923f9d7ebbcd58d8acab",
+    "c0/kernels/aic/gather.cpp": "e91fe21c860327df39c25e8632bb017d69861978d2f7cb5d9c455f305b2970ce",
+    "c0/ptoas/gather.cpp": "7f6ee0c316a05f3b16ae18f68fd4cbc28fc9eb2816f8e4091d7910cbd7b77c19",
+    "c1/kernels/aic/gather.cpp": "6cef8ce93d087655dd65a7feaceafb0be87b0eb484e020ce34a60ddc7b436db3",
+    "c1/ptoas/gather.cpp": "7ee75a692ae497a959f7330484f794716926dbc4d1fb7ef440145d6c4f5c9181",
+    "down/kernels/aic/matmul.cpp": "6697574fb8baa1daf1bab129252054ccada204c4076de024f611b48747d95f98",
+    "down/ptoas/matmul.cpp": "4873346c904f1b9a71e5766d1022ca1c8b9a4f4b4937248e0ff9ba5e1dc4a75d",
+    "gate_up/kernels/aic/matmul.cpp": "ba5001c04a3a3dbe37e4412fcc85e98bbc5cac97a03313d8f7d2ac3354e5c965",
+    "gate_up/ptoas/matmul.cpp": "0a470ecd1a72d6c0eedcb49ea34c32de660fa6ad2240eaf056a037cffb7379f2",
+    "native/axis0/launch.cpp": "1ec720c4763380ad6c12b6835739f15f2aed1a6408fdf47b56ce8c6d1cb75632",
+    "native/b0/launch.cpp": "c91ef0d204f15df44069d05fa29ca270944db6b62f7efaa694cdd31746b75a64",
+    "native/b1/launch.cpp": "f64e4ad488a0f5f45929ca7d4127d6d99ca9e1c026a45f60a9042210208eca84",
+    "native/c0/launch.cpp": "49b945826b5d992fd44fe4df29d301a1e41657cd62bc0b69ae48db31dc79b50a",
+    "native/c1/launch.cpp": "fbfbf3fe0c5edba92d3d69723444c98947c053044756b108908f846253bdce62",
+    "native/down/launch.cpp": "83bfbad313e88f3fede75cce58eba7ee8cf8ba7925a60185e7a4838e5ced2814",
+    "native/gate_up/launch.cpp": "fc232cc7c3f04b71444b73be40c5139618e3a6a87ed9e623a16f7f7555bcac77",
+    "native/output_cast/launch.cpp": "1a159430790da53c51052d1c3930ce988f68cd9139a205cdd015566166432fe3",
+    "native/singleton/launch.cpp": "9945c81bc71e5c5fef22b21882ce90750facca2973aac4ed52c9d7950cc9cd39",
+    "native/swiglu/launch.cpp": "6fa76d888f340dba39e834f039b0109cfdd103e7d589122d6dbf998aa584a8cd",
+    "output_cast/kernels/aiv/output_cast.cpp": "8979d7a6d3646479ff4543bbfbacc17839eb3b009ddf4ade126b2fb372842244",
+    "output_cast/ptoas/output_cast.cpp": "0213f1cad345b9ca22b1c8a9c446cfa71e95a92f0a17d6c7e06af57044e28f89",
+    "singleton/kernels/aic/gather.cpp": "ceaab246dfd28f46994eab4a0bc94d3198e9be5108fe6251bef3673f184ff08e",
+    "singleton/ptoas/gather.cpp": "8fa2b197589dc007ce70c9509edb962c50ac79d7475ed7baa5b2a5876fa14b86",
+    "swiglu/kernels/aiv/swiglu.cpp": "7308dff2c7f8d4091f79e0602c87b696dba5b324edeba8958a38a55edf8be590",
+    "swiglu/ptoas/swiglu.cpp": "cd71e4bae39192a15b2c9a71c0997bac7db9830c999f81efbd92595d273cf9a2",
+    "native/axis0/kernel.so": "ae062f329447f24960b876ffa80763ed7e07bdd35edbce9b17aae0cf4f250c06",
+    "native/b0/kernel.so": "2436293f8ce09190dac2f70d8c040cc2083a8c1b6bdd8ebe7a6261b64cefc9ad",
+    "native/b1/kernel.so": "a98ab7d173eb068f5ae95ce4e263f805101e7367e00b9c4fe8967cba99878cc0",
+    "native/c0/kernel.so": "5cc40e8b762915d88ce9cb7dde1099b4bd8fdde73605af3ffedd764796e79aab",
+    "native/c1/kernel.so": "d22928c24b51e6a13c89a1dbb034595bba9b129703f19c249bbca685fd493016",
+    "native/descriptor.so": "0748067e3d49117c1ef155424d366be32e77b18eba7425252780a8f1f6960560",
+    "native/down/kernel.so": "5b92295895706eb522e83343842f91a31a4b5ce2add4a49826131a735918e310",
+    "native/gate_up/kernel.so": "c9391202426f1882ebd194fee571cbd89b2032617176b6bd032b9cee2fa04eed",
+    "native/output_cast/kernel.so": "03846d314102fde6e4e7000da429c7997d4e357826442e35353e8d1cb9d7d0dc",
+    "native/singleton/kernel.so": "9d4024196b41f00ad11e30f070cffacb5e484ca681b1b2c26d13a8c4e2b78633",
+    "native/swiglu/kernel.so": "16ec441a75c12abfc7081bac15a085bd54785681e14ad532a27305bae74c5fed"
+  },
+  "validated_at": "2026-10-26",
+  "command": "bash pypto/examples/models/run_wse_a3.sh \"$(command -v python)\"",
+  "transport": "A3 cbuf/GM DMA via CCE mock; mapping/routes/slots use stubs",
+  "pypto_base": "390a75363f06dd5e538dcb749b92742a20962bde",
+  "dependencies": {
+    "simpler": "8472c063967970a62fd593c3828c551462d47047",
+    "PTOAS": "abb59418ba47e9abe2d80bd7218dc2bcf2ad1e45",
+    "pto-isa": "8078ebf991a04e3b4766689b71b6d71f0836fbe7"
+  },
+  "precheck_task_submit_id": "task_20261026_032440_339759619843",
+  "task_submit_id": "task_20261026_032442_339796423754",
+  "earlier_successful_task_submit_ids": [
+    "task_20261026_030411_269912814353",
+    "task_20261026_031736_309214921796"
+  ],
+  "checks": {
+    "pypto_wse_frontend": "14 passed",
+    "pypto_backend": "197 passed after adding the WSE migration classification",
+    "pypto_backend_and_pass_regression": "6250 passed; the single audit-ID failure was corrected and the entire 197-case backend suite rerun successfully",
+    "pypto_runtime_abi_regression": "7 passed after aligning simpler with PyPTO pinned revision d8f997fabd1b6988b69a94feef61ab669dda0eea",
+    "ptoas_calendar_cli": "7 passed",
+    "pto_isa_cpu_contract": "passed with -std=c++17 -Wall -Wextra -Werror",
+    "simpler_deployment": "8 passed",
+    "source_quality": "Ruff, cpplint, Markdown lint and PyPTO headers/documentation/registry checks passed; no type errors in changed files"
+  }
+}

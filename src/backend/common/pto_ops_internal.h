@@ -49,6 +49,7 @@ void RegisterMemoryOps(Backend& backend, const std::unordered_set<std::string>& 
 void RegisterDataMoveOps(Backend& backend, const std::unordered_set<std::string>& exclude_ops);
 void RegisterCrossCoreOps(Backend& backend, const std::unordered_set<std::string>& exclude_ops);
 void RegisterDistributedOps(Backend& backend, const std::unordered_set<std::string>& exclude_ops);
+void RegisterWseOps(Backend& backend, const std::unordered_set<std::string>& exclude_ops);
 void RegisterPrefetchOps(Backend& backend, const std::unordered_set<std::string>& exclude_ops);
 
 // Shared PTO codegen helper toolkit. Defined in pto_ops_shared.cpp; each

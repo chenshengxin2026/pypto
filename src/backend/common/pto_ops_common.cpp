@@ -42,6 +42,7 @@ void RegisterPTOOps(Backend& backend, const std::unordered_set<std::string>& exc
   RegisterCrossCoreOps(backend, exclude_ops);
   RegisterDistributedOps(backend, exclude_ops);
   RegisterPrefetchOps(backend, exclude_ops);
+  RegisterWseOps(backend, exclude_ops);
 }
 
 }  // namespace backend

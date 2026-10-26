@@ -43,7 +43,8 @@ namespace backend {
 static const bool kOpsRegistered = [] {
   RegisterSelectOps(Backend950::Instance(), BackendType::Ascend950);
   RegisterCastOps(Backend950::Instance(), BackendType::Ascend950);
-  RegisterPTOOps(Backend950::Instance());
+  // The current WSE Calendar transport uses A3 cbuf DMA intrinsics.
+  RegisterPTOOps(Backend950::Instance(), {"tile.wse_allgather"});
   return true;
 }();
 

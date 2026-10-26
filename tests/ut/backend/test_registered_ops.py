@@ -54,7 +54,7 @@ def test_backend_inventory_preserves_architecture_exclusions():
     assert mx_ops <= a5
     assert not mx_ops & a2a3
     assert a5 - a2a3 == mx_ops
-    assert a2a3 <= a5
+    assert a2a3 - a5 == {ir.get_op("tile.wse_allgather").name}
 
 
 if __name__ == "__main__":

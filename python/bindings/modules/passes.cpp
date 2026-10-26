@@ -410,6 +410,8 @@ void BindPass(nb::module_& m) {
              "accumulator producers write directly into the carried buffer. Split out of MemoryReuse\n"
              "so it can run without legacy opportunistic reuse (memory_planner=DSA_RP or PTOAS).");
 
+  passes.def("finalize_wse_calendar", &pass::FinalizeWseCalendar,
+             "Finalize the synchronous WSE receive contract after storage planning.");
   passes.def("verify_tile_storage", &pass::VerifyTileStorage, nb::arg("allocated") = false,
              "Verify canonical device storage; allocated=True also checks effective address overlap");
 
