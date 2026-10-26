@@ -675,18 +675,12 @@
   "validated_at": "2026-10-26",
   "command": "bash pypto/examples/models/run_wse_a3.sh \"$(command -v python)\"",
   "transport": "A3 cbuf/GM DMA via CCE mock; mapping/routes/slots use stubs",
-  "pypto_base": "390a75363f06dd5e538dcb749b92742a20962bde",
   "dependencies": {
     "simpler": "8472c063967970a62fd593c3828c551462d47047",
     "PTOAS": "abb59418ba47e9abe2d80bd7218dc2bcf2ad1e45",
     "pto-isa": "8078ebf991a04e3b4766689b71b6d71f0836fbe7"
   },
-  "precheck_task_submit_id": "task_20261026_032440_339759619843",
-  "task_submit_id": "task_20261026_032442_339796423754",
-  "earlier_successful_task_submit_ids": [
-    "task_20261026_030411_269912814353",
-    "task_20261026_031736_309214921796"
-  ],
+  "pypto_base": "390a75363f06dd5e538dcb749b92742a20962bde",
   "checks": {
     "pypto_wse_frontend": "14 passed",
     "pypto_backend": "197 passed after adding the WSE migration classification",
@@ -695,6 +689,22 @@
     "ptoas_calendar_cli": "7 passed",
     "pto_isa_cpu_contract": "passed with -std=c++17 -Wall -Wextra -Werror",
     "simpler_deployment": "8 passed",
-    "source_quality": "Ruff, cpplint, Markdown lint and PyPTO headers/documentation/registry checks passed; no type errors in changed files"
+    "source_quality": "Ruff, cpplint, Markdown lint and PyPTO headers/documentation/registry checks passed; no type errors in changed files",
+    "window_operand_audit": "99 passed, 2 skipped after explicit rejection of unsupported distributed-window operands",
+    "extended_unit_sweep": "10079 passed, 47 skipped, 1 xfailed; this is not a full-green repository-wide validation",
+    "focused_boundary_rerun": "402 passed, 6 skipped; 26 environment-related failures remain outside the WSE adapter"
+  },
+  "precheck_task_submit_id": "task_20261026_034014_414954212482",
+  "task_submit_id": "task_20261026_034015_415027626875",
+  "earlier_successful_task_submit_ids": [
+    "task_20261026_030411_269912814353",
+    "task_20261026_031736_309214921796",
+    "task_20261026_032442_339796423754"
+  ],
+  "unit_environment_limits": {
+    "release_backtraces": "10 stack-trace tests require Debug/RelWithDebInfo; the validated compiler was built in Release",
+    "installed_native_runtime": "25 ordinary ChipWorker tests load the system-installed _task_interface extension, which lacks MAILBOX_ARGS_CAPACITY from the matching simpler source; rebuild that extension to run those suites",
+    "driver_stdout": "1 hash-identity subprocess test is polluted by the CANN driver message DrvMngGetConsoleLogLevel failed (ret=4)",
+    "wse_scope": "The WSE adapter builds its own Tensor ABI bridge and native kernel launch shims and does not import the legacy _task_interface extension"
   }
 }

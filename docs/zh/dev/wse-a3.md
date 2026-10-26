@@ -81,7 +81,7 @@ A3 没有原生 Calendar 指令，也不保证跨这些启动保留 L1。因此�
 支持：静态二维 FP16 AllGather、轴 0/1（前端接受负轴）、源行 32 字节对齐、
 1–24 个成员、接收容量不超过 128 KiB、每个独立内核一次无条件集合通信、A3、
 PYPTO 内存规划。异步通信、归约、动态或尾块形状、单内核多次 Calendar、
-PTOAS 内存规划、普通 ChipWorker 编排绑定均不在当前范围内。
+分布式窗口操作数、PTOAS 内存规划、普通 ChipWorker 编排绑定均不在当前范围内。
 请编译独立的 `@pl.jit.incore` 内核并用 `simpler.wse` 执行。
 
 ## 验证
@@ -108,3 +108,9 @@ PYTHONPATH=simpler/python python -m pytest \
 六次运行（种子 1026–1028、两种映射）。FFN 最大绝对误差为 `3.0517578125e-5`，
 所有 AllGather 均逐位一致。B/C 每成员远端提交量为 1024/2048 字节，
 轴 0 为 64 字节，单成员为 0。记录包含任务 ID、设备/工具版本、epoch 和产物哈希。
+
+WSE 专项检查通过，但本机未取得全仓单测全绿。附加回归受到 Release 构建缺少
+调试回溯、普通 ChipWorker 测试加载旧版系统 `_task_interface` 原生扩展，以及
+CANN 驱动信息污染一项子进程标准输出检查的影响。JSON 记录分别列出这些限制。
+运行这些普通 runtime 单测需要重建匹配版本的 simpler 原生扩展，并使用
+Debug/RelWithDebInfo 编译器构建；WSE 适配器不依赖该扩展。

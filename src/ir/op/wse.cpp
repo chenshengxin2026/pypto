@@ -28,9 +28,11 @@ namespace {
 TypePtr DeduceGather(const std::vector<ExprPtr>& args,
                      const std::vector<std::pair<std::string, std::any>>& kwargs, bool tile) {
   CHECK(args.size() == 1) << "WSE allgather expects one input";
+  CHECK(tile || !As<DistributedTensorType>(args[0]->GetType()))
+      << "WSE adapter does not bind DistributedTensorType operands; use a local Tensor";
   std::shared_ptr<const ShapedType> input =
       tile ? std::static_pointer_cast<const ShapedType>(As<TileType>(args[0]->GetType()))
-           : std::static_pointer_cast<const ShapedType>(AsTensorTypeLike(args[0]->GetType()));
+           : std::static_pointer_cast<const ShapedType>(As<TensorType>(args[0]->GetType()));
   CHECK(input && input->shape_.size() == 2 && input->dtype_ == DataType::FP16)
       << "WSE allgather requires a rank-2 FP16 input";
   std::vector<int> members;

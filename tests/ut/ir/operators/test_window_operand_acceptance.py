@@ -105,6 +105,7 @@ WINDOW_REJECT_BY_DESIGN = {
     # is out of scope and rejected upstream (docs/en/dev/passes/12-convert_tensor_to_tile_ops.md).
     ir.get_op("tensor.aiv_shard").name: "cross-lane split boundary, not a GM read",
     ir.get_op("tensor.aic_gather").name: "cross-lane split boundary, not a GM read",
+    ir.get_op("tensor.wse_allgather").name: "WSE standalone adapter has no distributed-window ABI binding",
 }
 
 #: Operators whose deducer accepts a window today. Keep this list growing, never shrinking.
@@ -331,6 +332,9 @@ PROBES.update(
         ir.get_op("tensor.set_validshape").name: lambda: t.set_validshape(W(), 8, 32),
         ir.get_op("tensor.concat").name: lambda: t.concat(W(), T()),
         ir.get_op("tensor.reinterpret_view").name: lambda: t.reinterpret_view(W(), dtype=DT.FP16),
+        ir.get_op("tensor.wse_allgather").name: lambda: t.wse_allgather(
+            W(dtype=DT.FP16), members="2,9", axis=1
+        ),
         ir.get_op("tensor.fillpad").name: lambda: t.fillpad(W()),
         ir.get_op("tensor.fillpad_expand").name: lambda: t.fillpad_expand(W(), [16, 64]),
         ir.get_op("tensor.dim").name: lambda: t.dim(W(), 0),

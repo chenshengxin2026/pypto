@@ -92,7 +92,7 @@ Supported: static rank-2 FP16 AllGather, axes 0/1 (including negative frontend
 axes), packed 32-byte source rows, 1–24 members, receive capacity ≤128 KiB,
 one unconditional collective per standalone kernel, A3 and PYPTO memory
 planning. Asynchronous collectives, reduction, dynamic/tail geometry, multiple
-Calendar calls per kernel, PTOAS memory planning and ordinary ChipWorker
+Calendar calls per kernel, distributed-window operands, PTOAS memory planning and ordinary ChipWorker
 orchestration bindings are unsupported and must use a future extension.
 Compile standalone `@pl.jit.incore` kernels and execute them with `simpler.wse`.
 
@@ -124,3 +124,11 @@ The [recorded A3 validation](../../wse-a3-validation.json) passed all six runs
 error was `3.0517578125e-5`; every gather was bit exact. B/C remote committed
 bytes were 1024/2048 per member; axis 0 committed 64 and singleton 0.
 The report records task IDs, device/tool versions, epochs and artifact hashes.
+
+The WSE checks pass; repository-wide unit tests are not all green in this
+installation. Additional sweeps exposed Release-only missing debug backtraces,
+an older system-installed `_task_interface` binary used by ordinary ChipWorker
+tests, and a CANN driver message contaminating one subprocess stdout check.
+The JSON record lists these limits separately. Those suites require a matching
+native simpler extension and a Debug/RelWithDebInfo compiler build; the WSE
+adapter does not depend on that extension.
