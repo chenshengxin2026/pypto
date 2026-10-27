@@ -2440,6 +2440,14 @@ jobs:
           fi
           python -c "import pypto, simpler; print('env OK:', pypto.__file__)"
 
+      - name: Test CPU simulator target admission
+        # The unit-test job lacks Simpler. Require both optional prerequisites
+        # here so all four architecture/core cases run instead of skipping.
+        run: |
+          python -c "import simpler_setup"
+          g++-15 --version
+          python -m pytest tests/ut/runtime/test_cpu_sim_target.py -v
+
       - name: Test fillpad_inplace numerical correctness with PTOAS
         # The default ST planner is PYPTO. Select PTOAS explicitly to exercise
         # shared views and compare both valid and padded rows with the golden.

@@ -48,3 +48,7 @@ def test_pypto_compiler_preserves_simulator_target(tmp_path, platform, expected_
     assert library.selected_arch() == expected_arch
     library.simpler_cpu_sim_target.restype = ctypes.c_char_p
     assert library.simpler_cpu_sim_target() == family
+
+
+if __name__ == "__main__":
+    raise SystemExit(pytest.main([__file__, "-v"]))
