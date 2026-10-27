@@ -65,12 +65,14 @@ remain live until the `Worker.run()` fence returns, so peak staging memory is
 the sum of those distinct sizes. The reset copies are part of each repeated
 request's host overhead.
 
-This whole-buffer staging is required by the current Simpler Buffer API: `copy_to`
-derives the transfer length from the source `Buffer` and exposes neither a
-destination offset nor a public Buffer subview. Generated PyPTO domains cover
-their windows exactly with named buffers. Reset rejects artifacts with unnamed
-window slack because the Buffer API cannot restore that slack to fresh-window
-state.
+PyPTO resets each named buffer with `copy_to(dst, src)`, whose default transfer
+length is the source `Buffer` size. Generated domains cover the requested
+window exactly with named buffers. Reset rejects artifacts with unnamed slack
+inside that requested extent because it has no named buffer to restore there.
+The runtime's physical mapping may be larger due to allocation alignment, as
+on A5. Reset accepts this extra capacity and copies only the named buffers;
+it does not expose or reset the mapping's trailing padding. A physical mapping
+smaller than the requested window is rejected before copying that domain's buffers.
 
 ## Multiple compiled programs
 

@@ -2258,10 +2258,12 @@ class DistributedWorker(Worker):
             _workers, window_nbytes, buffer_specs = spec
             for worker_id in handle.workers:
                 actual_window_size = int(handle[worker_id].actual_window_size)
-                if actual_window_size != int(window_nbytes):
+                # Physical mappings can be rounded up to the platform's allocation
+                # granularity. Named buffers cover only the requested extent.
+                if actual_window_size < int(window_nbytes):
                     raise RuntimeError(
-                        f"persistent CommDomain {domain_name!r} changed window size on worker {worker_id}: "
-                        f"{actual_window_size} != {window_nbytes}"
+                        f"persistent CommDomain {domain_name!r} window on worker {worker_id} is too small: "
+                        f"{actual_window_size} < {window_nbytes}"
                     )
             for buffer_name, _dtype, _count, buffer_nbytes in buffer_specs:
                 nbytes = int(buffer_nbytes)

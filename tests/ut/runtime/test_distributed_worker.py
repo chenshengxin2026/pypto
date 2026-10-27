@@ -3527,6 +3527,59 @@ class TestPersistentDistributedWorker:
         assert orch.copy_calls == []
         assert m["worker"].submit.call_count == 2
 
+    @pytest.mark.parametrize("mapping_nbytes", [4096, 2 << 20])
+    def test_reset_accepts_aligned_physical_window(self, patched_setup, mapping_nbytes):
+        m = patched_setup
+        m["worker"]._live_domains = {}
+        orch = _PersistentOrch(m["worker"])
+        m["worker"].submit.side_effect = lambda fn: (orch.run(fn), _ImmediateNativeHandle())[1]
+        seen_handles: list[Any] = []
+        m["load_entry"].return_value = (_persistent_entry(64, seen_handles), None)
+        compiled = _fake_compiled([_param("a", [16, 16])], [])
+        compiled._distributed_config = DistributedConfig(device_ids=[0, 1])
+        rt = DistributedWorker(compiled, persistent=True)
+        arg = _resident(rt, (16, 16))
+        try:
+            rt(arg)
+            # A5 reports its aligned physical mapping; named buffers still
+            # cover only the requested extent, so padding must not be copied.
+            for context in orch.handles[0].contexts.values():
+                context.actual_window_size = mapping_nbytes
+            rt(arg)
+
+            assert len(orch.allocate_calls) == 1
+            assert seen_handles[0] is seen_handles[1]
+            assert [(dst.owner_worker_id, len(payload)) for dst, _src, payload in orch.copy_calls] == [
+                (0, 64),
+                (1, 64),
+            ]
+            assert all(payload == bytes(64) for _dst, _src, payload in orch.copy_calls)
+        finally:
+            rt.close()
+        assert orch.handles[0].backend_release_count == 1
+        assert orch.handles[0].freed
+
+    def test_reset_rejects_undersized_physical_window(self, patched_setup):
+        m = patched_setup
+        m["worker"]._live_domains = {}
+        orch = _PersistentOrch(m["worker"])
+        m["worker"].submit.side_effect = lambda fn: (orch.run(fn), _ImmediateNativeHandle())[1]
+        m["load_entry"].return_value = (_persistent_entry(64, []), None)
+        compiled = _fake_compiled([_param("a", [16, 16])], [])
+        compiled._distributed_config = DistributedConfig(device_ids=[0, 1])
+        rt = DistributedWorker(compiled, persistent=True)
+        arg = _resident(rt, (16, 16))
+        try:
+            rt(arg)
+            # Validate every rank before any copy, including a short mapping
+            # on a later rank after an earlier rank passed the size check.
+            orch.handles[0].contexts[1].actual_window_size = 32
+            with pytest.raises(RuntimeError, match="window.*worker 1"):
+                rt(arg)
+            assert orch.copy_calls == []
+        finally:
+            rt.close()
+
     def test_reset_rejects_unnamed_window_slack(self, patched_setup):
         m = patched_setup
         m["worker"]._live_domains = {}
