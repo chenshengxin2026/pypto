@@ -857,6 +857,36 @@ class TestB01PrecisionAndRowExpandAddCodegen:
         assert ") outs(" in high_precision_line
         assert high_precision_line.index("outs(") < high_precision_line.index("precisionType")
 
+    @pytest.mark.ptoas_compile
+    @pytest.mark.parametrize("enable_buffer_ir", [False, True])
+    @pytest.mark.parametrize("dtype", [pl.FP16, pl.FP32])
+    def test_high_precision_division_compiles_with_current_ptoas(self, tmp_path, dtype, enable_buffer_ir):
+        """Keep both division emitters compatible with the pinned PTOAS release."""
+
+        @pl.program
+        class PreciseDivision:
+            @pl.function(type=pl.FunctionType.InCore)
+            def kernel(
+                self,
+                lhs: pl.Tensor[[16, 32], dtype],
+                rhs: pl.Tensor[[16, 32], dtype],
+                out: pl.Out[pl.Tensor[[16, 32], dtype]],
+            ) -> pl.Tensor[[16, 32], dtype]:
+                a = pl.load(lhs, [0, 0], [16, 32])
+                b = pl.load(rhs, [0, 0], [16, 32])
+                return pl.store(pl.tile.div(a, b, high_precision=True), [0, 0], out)
+
+        backend.reset_for_testing()
+        backend.set_backend_type(BackendType.Ascend950)
+        with passes.PassContext([], enable_buffer_ir=enable_buffer_ir):
+            optimized = PassManager.get_strategy(OptimizationStrategy.Default).run_passes(PreciseDivision)
+        mlir = codegen.PTOCodegen().generate(optimized)
+        if find_ptoas_binary() is None:
+            pytest.skip("PTOAS is not available")
+        cpp = pto_backend._compile_pto_module(mlir, "kernel", str(tmp_path))
+        assert "TDIV<pto::DivAlgorithm::HIGH_PRECISION>" in cpp
+        assert "#pto<div_precision high_precision>" in mlir
+
     def test_tlog_emits_exact_high_precision_attr(self):
         @pl.program
         class LogProg:

@@ -39,6 +39,9 @@ def compiler_module(monkeypatch, tmp_path):
         get_incore_include_dirs=lambda: [str(tmp_path / "sdk include")],
         get_orchestration_cache_inputs=lambda runtime: ([], []),
         _orchestration_toolchain=lambda runtime: host if runtime == "host_build_graph" else tool,
+        incore_compile_cache_token=lambda core_type: {
+            "flags": ["-shared", "-fPIC", "-DSDK_SIM_TARGET", "-include", "sdk_target.h"]
+        },
     )
     monkeypatch.setitem(sys.modules, "simpler_setup", SimpleNamespace(KernelCompiler=lambda platform: sdk))
     monkeypatch.setitem(
@@ -89,6 +92,9 @@ def test_incore_build_and_link_are_owned_by_pypto(compiler_module, monkeypatch, 
     assert result == (b"object" if platform.endswith("sim") else b"linked")
     assert len(commands) == (1 if platform.endswith("sim") else 2)
     assert f"-I{tmp_path / 'sdk include'}" in commands[0]
+    assert ("-DSDK_SIM_TARGET" in commands[0]) == platform.endswith("sim")
+    if platform.endswith("sim"):
+        assert commands[0][commands[0].index("-include") + 1] == "sdk_target.h"
     if not platform.endswith("sim"):
         assert commands[1][1:3] == ["-e", "kernel_entry"]
         assert commands[1][-1] == commands[0][commands[0].index("-o") + 1]

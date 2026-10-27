@@ -67,6 +67,12 @@ metadata from the installed Simpler SDK without inheriting its compiler or
 calling its build methods. This works with the existing runtime pin; it does
 not introduce kernel execution or change program call semantics.
 
+CPU simulation consumes the complete SDK incore flag metadata, including the
+requested A2/A3 or A5 target family and the exported admission marker. Generic
+host compiler flags alone do not select a simulator architecture. When no
+explicit PTO ISA root is supplied, compilation resolves the SDK's pinned root
+so its forced target header uses the same instruction definitions as the runtime.
+
 | Previous inherited responsibility | Current owner |
 | --------------------------------- | ------------- |
 | SDK root, tool selection, target flags, runtime headers and helper sources | Simpler metadata queries, consumed by PyPTO |

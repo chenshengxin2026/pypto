@@ -22,7 +22,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 # `check_runtime_pin()` has to run before the simpler imports it guards, so the imports
 # below are deliberately not at the top of the file (E402 is ignored in pyproject.toml).
@@ -185,6 +185,17 @@ class KernelCompiler:
             raise ValueError("pto_isa_root is required for incore compilation")
         toolchain = self.sdk.gxx15 if simulation else self.sdk.ccec
         assert toolchain is not None, f"SDK did not provide an incore toolchain for {self.platform}"
+        if simulation:
+            # The generic GCC flags omit the simulator family and the loader's
+            # required metadata. Consume the SDK's complete command description
+            # while retaining PyPTO ownership of the actual compiler process.
+            compile_flags = cast("list[str]", self.sdk.incore_compile_cache_token(core_type)["flags"])
+            if pto_isa_root is None:
+                from simpler_setup.pto_isa import ensure_pto_isa_root  # noqa: PLC0415
+
+                pto_isa_root = ensure_pto_isa_root()
+        else:
+            compile_flags = toolchain.get_compile_flags(core_type=core_type)
         includes: list[str] = []
         if pto_isa_root is not None:
             includes.extend([str(Path(pto_isa_root) / "include"), str(Path(pto_isa_root) / "include/pto")])
@@ -196,7 +207,7 @@ class KernelCompiler:
             output = Path(directory).absolute() / ("kernel.so" if simulation else "kernel.o")
             cmd = [
                 toolchain.cxx_path,
-                *toolchain.get_compile_flags(core_type=core_type),
+                *compile_flags,
                 *self._sanitizer_flags(toolchain),
                 *self._include_flags(includes),
                 "-o",

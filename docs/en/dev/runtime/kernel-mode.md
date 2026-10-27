@@ -121,7 +121,7 @@ while public DFX windows are a later step. The workspace budget follows the
 public Worker's minimum of 1024 bytes and excludes borrowed tensor storage.
 
 The runtime submodule follows upstream's Simpler pin
-`d8f997fabd1b6988b69a94feef61ab669dda0eea`. The existing `check_runtime_pin`
+`531765c210813b019e9d6a491e3ace92d357fb26`. The existing `check_runtime_pin`
 policy remains authoritative for the installed native binding, including its
 missing-identity and explicit-skip rules. A separate availability check requires
 public borrowed init, caller-stream submit, Buffer/TaskArgs, RunHandle and
